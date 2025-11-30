@@ -47,7 +47,7 @@ export const Testimonials = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-24 lg:py-32 bg-background" ref={ref}>
+    <section id="testimonials" className="py-24 lg:py-32 bg-background" ref={ref}>
       <div className="container mx-auto px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

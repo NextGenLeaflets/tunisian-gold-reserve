@@ -41,7 +41,7 @@ export const USPs = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-24 lg:py-32 bg-muted/30" ref={ref}>
+    <section id="usps" className="py-24 lg:py-32 bg-muted/30" ref={ref}>
       <div className="container mx-auto px-6 lg:px-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
