@@ -11,8 +11,8 @@ export const Footer = () => {
           </div>
 
           <div className="flex flex-col md:flex-row items-center gap-6 text-sm text-cream/70">
-            <a href="mailto:contact@tunilink.co.uk" className="hover:text-gold transition-colors">
-              contact@tunilink.co.uk
+            <a href="mailto:info@tunilink.co.uk" className="hover:text-gold transition-colors">
+              info@tunilink.co.uk
             </a>
             <span className="hidden md:block">•</span>
             <a href="tel:+442071234567" className="hover:text-gold transition-colors">
