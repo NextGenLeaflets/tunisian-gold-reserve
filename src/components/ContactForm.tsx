@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin } from "lucide-react";
+import emailjs from "@emailjs/browser";
+
 
 export const ContactForm = () => {
   const ref = useRef(null);
@@ -17,47 +19,36 @@ export const ContactForm = () => {
   // -----------------------------
   // Web3Forms submit handler
   // -----------------------------
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-
-  try {
-    const formData = new FormData(e.currentTarget);
-
-    formData.append("access_key", "d169a6ce-fed9-4891-8af2-bebc7982eba2");
-    formData.append("subject", "New TuniLink Contact Request");
-    formData.append("from_name", "TuniLink Contact Form");
-
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      body: formData
-    });
-
-    const text = await res.text();           // FIX #1
-    const result = JSON.parse(text);         // FIX #2
-
-    if (res.ok) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+  
+    const form = e.currentTarget;
+  
+    try {
+      await emailjs.sendForm(
+        "service_ps51sjd", 
+        "template_gjjnzf7", 
+        form,
+        "2w59AnaGAYj3h7HrH"
+      );
+  
       toast({
         title: "Message Sent!",
-        description: "Thank you for your interest. We'll be in touch within 24 hours."
+        description: "Thank you for your interest. We'll be in touch within 24 hours.",
       });
-      e.currentTarget.reset();
-    } else {
+  
+      form.reset();
+    } catch (error) {
       toast({
-        title: "Submission Failed",
-        description: result?.message || "Unexpected error"
+        title: "Failed to Send",
+        description: "Please try again later.",
       });
     }
-  } catch (err) {
-    toast({
-      title: "Network Error",
-      description: "Something went wrong. Try again."
-    });
-  }
-
-  setIsSubmitting(false);
-};
-
+  
+    setIsSubmitting(false);
+  };
+  
 
   return (
     <section id="contact" className="py-24 lg:py-32 bg-muted/30" ref={ref}>
