@@ -17,16 +17,13 @@ export const ContactForm = () => {
   // -----------------------------
   // Web3Forms submit handler
   // -----------------------------
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
+  try {
     const formData = new FormData(e.currentTarget);
-
-    // Add Web3Forms access key
     formData.append("access_key", "d169a6ce-fed9-4891-8af2-bebc7982eba2");
-
-    // Optional but recommended metadata
     formData.append("subject", "New TuniLink Contact Request");
     formData.append("from_name", "TuniLink Contact Form");
 
@@ -45,13 +42,19 @@ export const ContactForm = () => {
       e.currentTarget.reset();
     } else {
       toast({
-        title: "Something went wrong",
-        description: result.message || "Please try again later."
+        title: "Submission Failed",
+        description: result.message || "Check your Access Key or required fields."
       });
     }
+  } catch (error) {
+    toast({
+      title: "Network Error",
+      description: "Something went wrong. Try again."
+    });
+  }
 
-    setIsSubmitting(false);
-  };
+  setIsSubmitting(false);
+};
 
   return (
     <section id="contact" className="py-24 lg:py-32 bg-muted/30" ref={ref}>
