@@ -65,8 +65,7 @@ export const Hero = () => {
             </Button>
             <Button
               size="lg"
-              variant="outline"
-              className="border-2 border-cream text-cream hover:bg-cream hover:text-olive-dark font-semibold px-8 py-6 text-lg backdrop-blur-sm transition-all hover:scale-105"
+              className="bg-gold hover:bg-gold-light text-foreground font-semibold px-8 py-6 text-lg shadow-luxury transition-all hover:scale-105"
               onClick={() => document.getElementById('story')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Our Story

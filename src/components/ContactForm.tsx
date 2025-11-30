@@ -82,8 +82,8 @@ export const ContactForm = () => {
                 </div>
                 <div>
                   <p className="font-medium text-foreground mb-1">Email</p>
-                  <a href="mailto:contact@tunilink.co.uk" className="text-muted-foreground hover:text-primary transition-colors">
-                    contact@tunilink.co.uk
+                  <a href="mailto:info@tunilink.co.uk" className="text-muted-foreground hover:text-primary transition-colors">
+                    info@tunilink.co.uk
                   </a>
                 </div>
               </div>
