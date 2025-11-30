@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,20 +14,43 @@ export const ContactForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // -----------------------------
+  // Web3Forms submit handler
+  // -----------------------------
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const formData = new FormData(e.currentTarget);
 
-    toast({
-      title: "Message Received!",
-      description: "Thank you for your interest. We'll be in touch within 24 hours.",
+    // Add Web3Forms access key
+    formData.append("access_key", "d169a6ce-fed9-4891-8af2-bebc7982eba2");
+
+    // Optional but recommended metadata
+    formData.append("subject", "New TuniLink Contact Request");
+    formData.append("from_name", "TuniLink Contact Form");
+
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      body: formData
     });
 
+    const result = await res.json();
+
+    if (res.ok) {
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for your interest. We'll be in touch within 24 hours."
+      });
+      e.currentTarget.reset();
+    } else {
+      toast({
+        title: "Something went wrong",
+        description: result.message || "Please try again later."
+      });
+    }
+
     setIsSubmitting(false);
-    (e.target as HTMLFormElement).reset();
   };
 
   return (
@@ -47,8 +69,7 @@ export const ContactForm = () => {
           </div>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-foreground mb-6 leading-tight">
-            Partner With{" "}
-            <span className="italic text-primary">TuniLink</span>
+            Partner With <span className="italic text-primary">TuniLink</span>
           </h2>
 
           <p className="text-xl text-muted-foreground">
@@ -58,6 +79,7 @@ export const ContactForm = () => {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          
           {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -116,8 +138,8 @@ export const ContactForm = () => {
 
             <div className="bg-gradient-to-br from-primary/5 to-gold/5 rounded-2xl p-6 border border-primary/10">
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">Trade Inquiries:</span> We offer competitive 
-                volume pricing and flexible delivery schedules for B2B partners.
+                <span className="font-medium text-foreground">Trade Inquiries:</span>  
+                We offer competitive volume pricing and flexible delivery schedules for B2B partners.
               </p>
             </div>
           </motion.div>
@@ -130,73 +152,40 @@ export const ContactForm = () => {
           >
             <form onSubmit={handleSubmit} className="bg-card rounded-2xl p-8 shadow-luxury border border-border/50">
               <div className="space-y-6">
+
+                <input type="hidden" name="from_name" value="TuniLink Contact Form" />
+                <input type="hidden" name="subject" value="New TuniLink Contact Request" />
+
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name *</Label>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      required
-                      placeholder="John"
-                      className="border-border focus:border-primary"
-                    />
+                    <Input id="firstName" name="firstName" required placeholder="John" />
                   </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name *</Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      required
-                      placeholder="Smith"
-                      className="border-border focus:border-primary"
-                    />
+                    <Input id="lastName" name="lastName" required placeholder="Smith" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="john@company.com"
-                    className="border-border focus:border-primary"
-                  />
+                  <Input id="email" name="email" type="email" required placeholder="john@company.com" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="company">Company Name *</Label>
-                  <Input
-                    id="company"
-                    name="company"
-                    required
-                    placeholder="Your Company Ltd"
-                    className="border-border focus:border-primary"
-                  />
+                  <Input id="company" name="company" required placeholder="Your Company Ltd" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="+44"
-                    className="border-border focus:border-primary"
-                  />
+                  <Input id="phone" name="phone" type="tel" placeholder="+44" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="message">Message *</Label>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    required
-                    rows={5}
-                    placeholder="Tell us about your business and how we can help..."
-                    className="border-border focus:border-primary resize-none"
-                  />
+                  <Textarea id="message" name="message" required rows={5} />
                 </div>
 
                 <Button
@@ -213,6 +202,7 @@ export const ContactForm = () => {
               </div>
             </form>
           </motion.div>
+
         </div>
       </div>
     </section>
