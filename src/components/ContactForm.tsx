@@ -23,7 +23,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   try {
     const formData = new FormData(e.currentTarget);
-    formData.append("access_key", "d169a6ce-fed9-4891-8af2-bebc7982eba2");
+
+    formData.append("access_key", process.env.NEXT_PUBLIC_WEB3FORMS_KEY!);
     formData.append("subject", "New TuniLink Contact Request");
     formData.append("from_name", "TuniLink Contact Form");
 
@@ -32,7 +33,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       body: formData
     });
 
-    const result = await res.json();
+    const text = await res.text();           // FIX #1
+    const result = JSON.parse(text);         // FIX #2
 
     if (res.ok) {
       toast({
@@ -43,10 +45,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     } else {
       toast({
         title: "Submission Failed",
-        description: result.message || "Check your Access Key or required fields."
+        description: result?.message || "Unexpected error"
       });
     }
-  } catch (error) {
+  } catch (err) {
     toast({
       title: "Network Error",
       description: "Something went wrong. Try again."
@@ -55,6 +57,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   setIsSubmitting(false);
 };
+
 
   return (
     <section id="contact" className="py-24 lg:py-32 bg-muted/30" ref={ref}>
