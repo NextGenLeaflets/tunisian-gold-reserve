@@ -1,6 +1,6 @@
-import { motion, useAnimation } from "framer-motion";
+import { motion, useMotionValue } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Star, Quote } from "lucide-react";
 
 const testimonials = [
@@ -52,19 +52,70 @@ export const Testimonials = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  // Controls for continuous motion + hover pause
-  const controls = useAnimation();
+  // Motion and marquee state
+  const x = useMotionValue(0);
+  const rafRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
+  const baseSpeed = 0.6; // base auto-speed
+  const speedRef = useRef(baseSpeed);
+  const targetSpeedRef = useRef(baseSpeed);
+  
+  // Calculate total width for infinite loop
+  const cardWidth = 350 + 24; // min-w-[350px] + gap-6 (24px)
+  const totalWidth = testimonials.length * cardWidth;
+
+  // Update target speed based on hover state
   useEffect(() => {
-    controls.start({
-      x: "-50%",
-      transition: {
-        duration: 20,
-        ease: "linear",
-        repeat: Infinity,
-      },
-    });
-  }, []);
+    if (isHovered && !isDragging) {
+      targetSpeedRef.current = 0; // Target stop when hovering
+    } else if (!isDragging) {
+      targetSpeedRef.current = baseSpeed; // Target resume when not hovering
+    }
+  }, [isHovered, isDragging]);
+
+  // Smooth continuous marquee loop
+  useEffect(() => {
+    const loop = () => {
+      // Smoothly interpolate to target speed
+      const diff = targetSpeedRef.current - speedRef.current;
+      speedRef.current += diff * 0.05; // Smooth deceleration/acceleration
+      
+      // Only auto-scroll if not dragging
+      if (!isDragging) {
+        x.set(x.get() - speedRef.current);
+      }
+      
+      // Infinite loop logic - reset when scrolled past first set
+      const currentX = x.get();
+      if (currentX <= -totalWidth) {
+        x.set(currentX + totalWidth);
+      } else if (currentX > 0) {
+        x.set(currentX - totalWidth);
+      }
+      
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    loop();
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [isDragging, x, totalWidth]);
+
+  // Drag logic
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = (_, info) => {
+    setIsDragging(false);
+
+    // Flick velocity → speed boost
+    const v = info.velocity.x;
+    speedRef.current = baseSpeed + Math.abs(v) * 0.001;
+
+    // Bounds to avoid insane speeds
+    speedRef.current = Math.max(0.2, Math.min(speedRef.current, 4));
+  };
 
   return (
     <section
@@ -73,6 +124,7 @@ export const Testimonials = () => {
       ref={ref}
     >
       <div className="container mx-auto px-6 lg:px-12">
+
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -96,30 +148,25 @@ export const Testimonials = () => {
           </p>
         </motion.div>
 
-        {/* Continuous Slider */}
+        {/* Marquee */}
         <div className="overflow-hidden relative">
           <motion.div
-            className="flex gap-6"
-            animate={controls}
-            onHoverStart={() => controls.stop()}
-            onHoverEnd={() =>
-              controls.start({
-                x: "-50%",
-                transition: {
-                  duration: 20,
-                  ease: "linear",
-                  repeat: Infinity,
-                },
-              })
-            }
+            className="flex gap-6 cursor-grab active:cursor-grabbing"
+            style={{ x }}
+            drag="x"
+            dragElastic={0}
+            dragMomentum={false}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
           >
-            {[...testimonials, ...testimonials].map((testimonial, index) => (
+            {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((t, i) => (
               <motion.div
-                key={index}
+                key={i}
                 className="min-w-[350px] lg:min-w-[380px]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 transition={{ duration: 1 }}
               >
                 <div className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-luxury transition-all duration-500 h-full flex flex-col border border-border/50">
@@ -128,21 +175,21 @@ export const Testimonials = () => {
                   </div>
 
                   <p className="text-muted-foreground leading-relaxed mb-6 flex-grow italic">
-                    "{testimonial.content}"
+                    "{t.content}"
                   </p>
 
                   <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-gold text-gold" />
+                    {[...Array(t.rating)].map((_, j) => (
+                      <Star key={j} className="w-5 h-5 fill-gold text-gold" />
                     ))}
                   </div>
 
                   <div className="border-t border-border pt-4">
                     <p className="font-display text-lg font-medium text-foreground">
-                      {testimonial.name}
+                      {t.name}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {testimonial.role}
+                      {t.role}
                     </p>
                   </div>
                 </div>
@@ -150,7 +197,7 @@ export const Testimonials = () => {
             ))}
           </motion.div>
 
-          {/* Gradient Fades */}
+          {/* Edge gradients */}
           <div className="pointer-events-none absolute top-0 left-0 h-full w-24 bg-gradient-to-r from-background to-transparent"></div>
           <div className="pointer-events-none absolute top-0 right-0 h-full w-24 bg-gradient-to-l from-background to-transparent"></div>
         </div>
