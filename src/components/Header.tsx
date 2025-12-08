@@ -45,13 +45,30 @@ export const Header = () => {
     >
       <nav className="container mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <button
-            onClick={() => scrollToSection("hero")}
-            className="text-2xl font-display font-medium text-foreground hover:text-primary transition-colors"
-          >
-            TuniLink
-          </button>
+            {/* Logo */}
+            <AnimatePresence>
+              {isScrolled ? (
+                <motion.button
+                  key="logo"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  onClick={() => scrollToSection("hero")}
+                  className="p-0 bg-transparent border-0 cursor-pointer"
+                  aria-label="TuniLink Home"
+                >
+                  <img
+                    src="/transparent_logo.png"
+                    alt="TuniLink logo"
+                    className="h-40 md:h-40 w-auto"
+                  />
+                </motion.button>
+              ) : (
+                // keep the same space to avoid layout shift while hidden
+                <div className="h-40 md:h-40 w-auto" aria-hidden="true" />
+              )}
+            </AnimatePresence>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
