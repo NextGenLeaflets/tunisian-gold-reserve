@@ -126,8 +126,7 @@ export const ContactForm = () => {
                 <div>
                   <p className="font-medium text-foreground mb-1">Location</p>
                   <p className="text-muted-foreground">
-                    London, United Kingdom<br />
-                    Serving UK Wholesalers & Retailers
+                    71-75 Shelton St, London WC2H 9JQ
                   </p>
                 </div>
               </div>
