@@ -15,8 +15,8 @@ export const Footer = () => {
               info@tunilink.co.uk
             </a>
             <span className="hidden md:block">•</span>
-            <a href="tel:+442071234567" className="hover:text-gold transition-colors">
-              +44 (0) 20 7123 4567
+            <a href="tel:02081542346" className="hover:text-gold transition-colors">
+              020 8154 2346
             </a>
           </div>
         </div>
