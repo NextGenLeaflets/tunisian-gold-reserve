@@ -113,8 +113,8 @@ export const ContactForm = () => {
                 </div>
                 <div>
                   <p className="font-medium text-foreground mb-1">Phone</p>
-                  <a href="tel:+442071234567" className="text-muted-foreground hover:text-primary transition-colors">
-                    +44 (0) 20 7123 4567
+                  <a href="tel:02081542346" className="text-muted-foreground hover:text-primary transition-colors">
+                    020 8154 2346
                   </a>
                 </div>
               </div>
